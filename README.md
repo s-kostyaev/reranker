@@ -1,5 +1,9 @@
 # reranker
-Reranker local service. Can be useful as a part of RAG pipeline.
+Reranker local service. Can be useful as a part of RAG pipeline. It
+uses
+[BAAI/bge-reranker-v2-m3](https://huggingface.co/BAAI/bge-reranker-v2-m3)
+under the hood. It is lightweight reranker model with strong
+multilingual capabilities.
 
 You can run application in docker with:
 
