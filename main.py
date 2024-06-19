@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, conint, validator
 from typing import List, Optional
-import random
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
@@ -31,7 +30,8 @@ async def rerank_documents(request: RequestData):
     response = []
     pairs = request.construct_pairs()
     with torch.no_grad():
-        inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors='pt', max_length=512)
+        inputs = tokenizer(pairs, padding=True, truncation=True,
+                           return_tensors='pt', max_length=512)
         scores = model(**inputs, return_dict=True).logits.view(-1, ).float()
         result = zip(request.documents, scores)
         for doc, score in result:
