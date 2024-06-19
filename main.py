@@ -1,3 +1,15 @@
+"""
+This module provides a FastAPI application that uses sequence classification
+to rank documents based on their similarity to a given query.
+
+The application accepts POST requests to the '/api/v1/rerank'
+endpoint, which takes in a RequestData object containing the query and
+a list of Document objects. It then constructs pairs of query and
+document texts for scoring. The ranked documents with their
+corresponding similarity scores are returned as a ResponseData object.
+
+"""
+
 from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel, conint
