@@ -10,9 +10,10 @@ corresponding similarity scores are returned as a ResponseData object.
 
 """
 
-from typing import List
+from uuid import UUID
+from typing import List, Union
 from fastapi import FastAPI
-from pydantic import BaseModel, conint
+from pydantic import BaseModel
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
@@ -27,11 +28,11 @@ class Document(BaseModel):
     A model representing a document with an ID and text.
 
     Attributes:
-        id (conint, gt=0): The unique ID of the document.
+        id Union[int, str, UUID]: The unique ID of the document.
         text (str): The text content of the document.
     """
 
-    id: conint(gt=0)
+    id: Union[int, str, UUID]
     text: str
 
 class RequestData(BaseModel):
@@ -68,11 +69,11 @@ class ResponseData(BaseModel):
     A model representing the response to a reranking request.
 
     Attributes:
-        id (conint, gt=0): The ID of the ranked document.
+        id Union[int, str, UUID]: The ID of the ranked document.
         similarity (float): The calculated similarity score between the query
         and the document's text.
     """
-    id: conint(gt=0)
+    id: Union[int, str, UUID]
     similarity: float
 
 @app.post("/api/v1/rerank")
