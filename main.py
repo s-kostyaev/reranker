@@ -95,7 +95,7 @@ async def rerank_documents(request: RequestData):
     pairs = request.construct_pairs()
     with torch.no_grad():
         inputs = tokenizer(pairs, padding=True, truncation=True,
-                           return_tensors='pt', max_length=512)
+                           return_tensors='pt', max_length=1024)
         scores = model(**inputs, return_dict=True).logits.view(-1, ).float()
         result = zip(request.documents, scores)
         for doc, score in result:
