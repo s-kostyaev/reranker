@@ -10,6 +10,8 @@ corresponding similarity scores are returned as a ResponseData object.
 
 """
 
+import os
+import logging
 from uuid import UUID
 from typing import List, Union
 from fastapi import FastAPI
@@ -17,8 +19,20 @@ from pydantic import BaseModel
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-tokenizer = AutoTokenizer.from_pretrained('BAAI/bge-reranker-v2-m3')
-model = AutoModelForSequenceClassification.from_pretrained('BAAI/bge-reranker-v2-m3')
+port = int(os.getenv("PORT", "8787"))
+max_length=int(os.getenv("MAX_LENGTH", "512"))
+model_name=os.getenv("MODEL", "BAAI/bge-reranker-v2-m3")
+device=os.getenv("DEVICE")
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s:     %(message)s')
+logging.info("port: %d", port)
+logging.info("max_length: %d", max_length)
+logging.info("model: %s", model_name)
+logging.info("device: %s", device)
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
+model = model.to(device)
 model.eval()
 
 app = FastAPI()
@@ -95,7 +109,7 @@ async def rerank_documents(request: RequestData):
     pairs = request.construct_pairs()
     with torch.no_grad():
         inputs = tokenizer(pairs, padding=True, truncation=True,
-                           return_tensors='pt', max_length=1024)
+                           return_tensors="pt", max_length=max_length).to(device)
         scores = model(**inputs, return_dict=True).logits.view(-1, ).float()
         result = zip(request.documents, scores)
         for doc, score in result:
@@ -105,4 +119,4 @@ async def rerank_documents(request: RequestData):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8787)
+    uvicorn.run(app, host="127.0.0.1", port=port)
