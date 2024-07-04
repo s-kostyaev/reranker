@@ -5,13 +5,36 @@ uses
 under the hood. It is lightweight reranker model with strong
 multilingual capabilities.
 
+# How to use
+
+## Docker
+
 You can run application in docker with:
 
 ``` shell
-docker compose up
+docker compose up --build
 ```
 
-And call service with:
+Check available options in `compose.yaml`.
+
+## Local setup
+
+You can run it locally with python:
+
+``` shell
+pip install -r requirements.txt
+DEVICE=mps MAX_LENGTH=1024 python main.py
+```
+
+## Environment variables
+
+- `PORT` - change the port the service listens on. Default 8787.
+- `MAX_LENGTH` - maximum sequence length. Default 512 tokens.
+- `MODEL` - reranking model. Default 'BAAI/bge-reranker-v2-m3'.
+- `DEVICE` - set to `mps` for M-series macs or `cuda` for nvidia
+  cards. Cpu will be used if not set.
+
+You can call service with:
 
 ``` shell
 curl -X POST "http://127.0.0.1:8787/api/v1/rerank" -H "Content-Type: application/json" -d '{"query":"what is panda?", "documents": [{"id": 1, "text": "hi"}, {"id": 2, "text": "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China."}, {"id": 3, "text": "I like pandas."}]}'

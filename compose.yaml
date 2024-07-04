@@ -9,6 +9,11 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
+    environment:
+      - PORT=8787
+      - MAX_LENGTH=512
+      - MODEL=BAAI/bge-reranker-v2-m3
+      # - DEVICE=cuda
     build:
       context: .
     ports:
